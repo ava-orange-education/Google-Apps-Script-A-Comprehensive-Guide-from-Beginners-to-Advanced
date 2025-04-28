@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leave Request {{approved_or_rejected}}</title>
+  </head>
+
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    "
+  >
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px">
+      <div style="background-color: #ffffff; padding: 30px; border-radius: 5px">
+        <h1>Leave Request {{approved_or_rejected}}</h1>
+        <p>
+          Your leave request has been
+          <strong>{{approved_or_rejected}}</strong> by your manager.
+        </p>
+        <div
+          style="background-color: #f8f9fa; padding: 20px; border-radius: 5px"
+        >
+          <p><strong>Start Date:</strong> {{start_date}}</p>
+          <p><strong>End Date:</strong> {{end_date}}</p>
+          <p><strong>Duration:</strong> {{duration}} days</p>
+        </div>
+        <p style="color: #999999; font-size: 12px; text-align: center">
+          This is an automated message. Please do not reply.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

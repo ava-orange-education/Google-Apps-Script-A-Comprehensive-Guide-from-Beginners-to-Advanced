@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leave Request Approval</title>
+  </head>
+
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    "
+  >
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px">
+      <div
+        style="
+          background-color: #ffffff;
+          padding: 30px;
+          border-radius: 5px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        "
+      >
+        <h1 style="color: #333333; margin-top: 0; font-size: 24px">
+          Leave Request Approval
+        </h1>
+        <p>
+          {{employee_email}} has submitted a leave request for your approval.
+        </p>
+        <div
+          style="background-color: #f8f9fa; padding: 20px; border-radius: 5px"
+        >
+          <p><strong>Start Date:</strong> {{start_date}}</p>
+          <p><strong>End Date:</strong> {{end_date}}</p>
+          <p><strong>Duration:</strong> {{duration}} days</p>
+        </div>
+        <div style="text-align: center">
+          <a
+            href="{{approve_url}}"
+            style="
+              background-color: #28a745;
+              color: #ffffff;
+              text-decoration: none;
+              padding: 12px 25px;
+              border-radius: 4px;
+            "
+            >Approve</a
+          >
+          <a
+            href="{{reject_url}}"
+            style="
+              background-color: #dc3545;
+              color: #ffffff;
+              text-decoration: none;
+              padding: 12px 25px;
+              border-radius: 4px;
+            "
+            >Reject</a
+          >
+        </div>
+        <p style="color: #999999; font-size: 12px; text-align: center">
+          This is an automated message. Please do not reply.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

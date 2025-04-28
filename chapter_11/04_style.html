@@ -1,0 +1,103 @@
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    /* Aligns the sidebar vertically to the top */
+    padding: 20px;
+    /* Adds a small margin around the content */
+  }
+
+  .sidebar {
+    width: 300px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .sidebar h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #333333;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button.mark-done {
+    background-color: #28a745;
+    color: white;
+  }
+
+  button.mark-done:hover {
+    background-color: #218838;
+  }
+
+  button.mark-undone {
+    background-color: #ffc107;
+    color: white;
+  }
+
+  button.mark-undone:hover {
+    background-color: #e0a800;
+  }
+
+  button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+  }
+
+  .task-list-container {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+
+  .task-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .task-item {
+    padding: 8px;
+    margin-bottom: 6px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    color: #333333;
+    font-size: 1rem;
+  }
+
+  .task-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .task-item:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+</style>

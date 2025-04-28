@@ -1,0 +1,29 @@
+<script>
+  function markAllAsDone() {
+    const button = document.querySelector('.mark-done');
+    button.disabled = true;
+    google.script.run
+      .withSuccessHandler(() => {
+        button.disabled = false;
+      })
+      .withFailureHandler(error => {
+        button.disabled = false;
+        alert(`Error: ${error}`);
+      })
+      .markAllAsDone();
+  }
+
+  function markAllAsUndone() {
+    const button = document.querySelector('.mark-undone');
+    button.disabled = true;
+    google.script.run
+      .withSuccessHandler(() => {
+        button.disabled = false;
+      })
+      .withFailureHandler(error => {
+        button.disabled = false;
+        alert(`Error: ${error}`);
+      })
+      .markAllAsUndone();
+  }
+</script>

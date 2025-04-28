@@ -1,0 +1,3 @@
+function appendPageBreak() {
+  body.appendPageBreak();
+}

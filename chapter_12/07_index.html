@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en" theme="light" class="theme-light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leave Request Manager</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma/css/bulma.min.css" />
+  <link rel="shortcut icon" href="https://www.freepik.com/icon/code_7784482" />
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">Leave Request Manager</h1>
+      <p class="subtitle">Manage your leaves with ease!</p>
+
+      <div class="box is-flex is-align-items-center">
+        <p><strong>Logged in as:</strong></p>
+        <span id="user-email" class="ml-3"><progress class="progress is-small is-primary" max="100"
+            style="width: 200px"></progress></span>
+      </div>
+
+      <div class="box">
+        <p class="is-flex is-align-items-center">
+          <strong>Days Left in Quota:</strong>
+          <span id="days-left" class="ml-2"><progress class="progress is-small is-primary" max="100"
+              style="width: 50px"></progress></span>
+          <span class="ml-2">days</span>
+        </p>
+      </div>
+
+      <div class="box">
+        <h2 class="subtitle">Your Leave Requests</h2>
+        <table class="table is-striped is-hoverable is-fullwidth">
+          <thead>
+            <tr>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Total Days</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <template id="cancel-button-template"><button
+              class="button is-small is-danger is-light">Cancel</button></template>
+          <tbody id="leave-requests">
+            <tr>
+              <td colspan="5">
+                <div class="skeleton-lines">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="box">
+        <h2 class="subtitle">Request a New Leave</h2>
+        <div class="field"><label class="label">Start Date</label><input class="input" type="date" id="start-date" />
+        </div>
+        <div class="field"><label class="label">End Date</label><input class="input" type="date" id="end-date" /></div>
+      </div>
+
+      <div class="is-flex is-align-items-center">
+        <button class="button is-primary" onclick="submitLeaveRequest(this)">Submit Leave Request</button>
+        <div id="leave-error" class="ml-4 has-text-danger is-hidden"></div>
+      </div>
+    </div>
+    </div>
+  </section>
+  <script>
+    /**
+ * Promisifies google.script.run
+ * @param {string} functionName - The name of the Apps Script function to call
+ * @param {Array<*>} args - The array of arguments to pass to the Apps Script function
+ */
+    async function runGas(functionName, args = []) {
+      return new Promise((resolve, reject) => {
+        google.script.run
+          .withSuccessHandler(resolve)
+          .withFailureHandler(reject)
+        [functionName](...args);
+      });
+    }
+    async function loadData() {
+      console.log('⏳ Loading data...');
+      const [userEmail, requests, remainingQuota] = await Promise.all([
+        runGas('getUserEmail'),
+        runGas('getRequests'),
+        runGas('getRemainingQuota'),
+      ]);
+
+      storage.set('userEmail', userEmail);
+      storage.set('remainingQuota', remainingQuota);
+      storage.set('requests', JSON.parse(requests));
+
+      ['#start-date', '#end-date'].forEach(input => (qs(input).value = ''));
+
+      window.dispatchEvent(new Event('data-loaded'));
+    }
+
+    class Storage {
+      constructor(prefix = 'leaves_') {
+        this.prefix = prefix;
+      }
+
+      set(key, value) {
+        localStorage.setItem(this.prefix + key, JSON.stringify(value));
+      }
+
+      get(key, defaultValue = null) {
+        const value = localStorage.getItem(this.prefix + key);
+        return value ? JSON.parse(value) : defaultValue;
+      }
+
+      remove(key) {
+        localStorage.removeItem(this.prefix + key);
+      }
+
+      clear() {
+        Object.keys(localStorage)
+          .filter(key => key.startsWith(this.prefix))
+          .forEach(key => localStorage.removeItem(key));
+      }
+    }
+
+    function cloneCancelButton(requestId) {
+      const button = qs('#cancel-button-template')
+        .content.cloneNode(true)
+        .querySelector('button');
+      button.dataset.requestId = requestId;
+      button.setAttribute('onclick', `cancelRequest(this, '${requestId}');`);
+      return button.outerHTML;
+    }
+
+    function displayData() {
+      qs('#user-email').innerText = storage.get('userEmail');
+      qs('#days-left').innerText = storage.get('remainingQuota');
+      qs('#leave-requests').innerHTML = storage
+        .get('requests')
+        .map(req => {
+          const btn =
+            'Pending' === req.status ? cloneCancelButton(req.request_id) : '&nbsp;';
+          return `
+        <tr>
+          <td>${formatDate(req.start_date)}</td>
+          <td>${formatDate(req.end_date)}</td>
+          <td>${req.duration}</td>
+          <td>${req.status}</td>
+          <td>${btn}</td>
+        </tr>
+      `;
+        })
+        .join('\n');
+    }
+
+    function qs(selector) {
+      return document.querySelector(selector);
+    }
+
+    async function cancelRequest(self, requestId) {
+      self.disabled = true;
+      self.textContent = 'Cancelling...';
+      const r = await runGas('cancelRequest', [requestId]);
+      console.log({r});
+      window.dispatchEvent(new Event('reload-data'));
+    }
+
+    async function submitLeaveRequest(self) {
+      const start = new Date(qs('#start-date').value);
+      const end = new Date(qs('#end-date').value);
+      console.log({start, end});
+      checkDuration(start, end);
+      try {
+        self.disabled = true;
+        self.innerText = 'Submitting...';
+        await runGas('saveRequest', [
+          start.toISOString().split('T')[0],
+          end.toISOString().split('T')[0],
+        ]);
+        dispatchEvent(new Event('reload-data'));
+      } catch (err) {
+        return showLeaveError(err);
+      } finally {
+        self.disabled = false;
+        self.innerText = 'Submit Leave Request';
+      }
+    }
+
+    function checkDuration(start, end) {
+      if ('Invalid Date' == start) return showLeaveError('Invalid start date');
+      if ('Invalid Date' == end) return showLeaveError('Invalid end date');
+      if (end <= start)
+        return showLeaveError('End date cannot be earlier than start date');
+      if (start <= Date.now())
+        return showLeaveError('Leave request cannot start before tomorrow');
+      const MS_IN_DAY = 1000 * 60 * 60 * 24;
+      if (Math.ceil((end - start) / MS_IN_DAY) > storage.get('remainingQuota'))
+        return showLeaveError(
+          `Leave duration exceeds remaining quota of ${storage.get('remainingQuota')} days`
+        );
+    }
+
+    function showLeaveError(msg) {
+      const errorDiv = qs('#leave-error');
+      errorDiv.textContent = msg;
+      errorDiv.classList.remove('is-hidden');
+      setTimeout(() => {
+        errorDiv.classList.add('is-hidden');
+        errorDiv.textContent = '';
+      }, 3000);
+      throw new Error(msg);
+    }
+
+    window.onload = loadData;
+    window.addEventListener('data-loaded', displayData);
+    window.addEventListener('reload-data', loadData);
+
+    const storage = new Storage();
+  </script>
+</body>
+
+</html>

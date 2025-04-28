@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML/CSS/JS Example</title>
+    <style>
+      .button {
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+      }
+
+      .text-input {
+        font-size: 16px;
+        padding: 12px 20px;
+        margin: 8px 0;
+        border: 1px solid #ccc;
+      }
+
+      div#message {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <input class="text-input" id="nameInput" type="text" placeholder="Name" />
+    <button class="button" onclick="sayHello()">Say Hello</button>
+    <div id="message"></div>
+
+    <script>
+      const nameInput = document.getElementById('nameInput');
+      const message = document.getElementById('message');
+
+      function sayHello() {
+        const name = nameInput.value;
+        message.innerHTML = `Hello ${name}!`;
+      }
+    </script>
+  </body>
+</html>

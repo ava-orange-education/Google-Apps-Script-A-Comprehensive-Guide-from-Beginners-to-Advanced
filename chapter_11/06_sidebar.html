@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apps Script Task List</title>
+    <?!= include('style') ?>
+  </head>
+
+  <body>
+    <div class="sidebar">
+      <h1>Apps Script Task List</h1>
+      <div class="task-list-container">
+        <ul class="task-list">
+          <? const tasks = getUndoneTasks(); ?> <? for(let i = 0; i <
+          tasks.length; i++) { ?>
+          <li class="task-item"><?= tasks[i] ?></li>
+          <? } ?>
+        </ul>
+      </div>
+      <div class="button-container">
+        <button class="mark-done" onclick="markAllAsDone()">
+          Mark all as done
+        </button>
+        <button class="mark-undone" onclick="markAllAsUndone()">
+          Mark all as undone
+        </button>
+      </div>
+    </div>
+
+    <?!= include('javascript') ?>
+  </body>
+</html>
